@@ -361,7 +361,6 @@
       <div class="cta-row">
         <a href="#work" class="btn-primary" id="cta-work"></a>
         <a href="#" class="btn-ghost" id="cta-github" rel="noopener noreferrer">GitHub</a>
-        <a href="#contact" class="btn-ghost" id="cta-email"></a>
       </div>
     </div>
   </header>
@@ -483,8 +482,7 @@ const content = {
     fact1: { zh: "Canada-based", en: "Canada-based" },
     fact2: { zh: "Wallet & trading systems", en: "Wallet & trading systems" },
     fact3: { zh: "Agent payment infra", en: "Agent payment infra" },
-    ctaWork: { zh: "看作品 →", en: "View work →" },
-    ctaEmail: { zh: "邮件", en: "Email" }
+    ctaWork: { zh: "看作品 →", en: "View work →" }
   },
   buildTitle: { zh: "三种能力，一个交叉点", en: "Three capabilities, one overlap" },
   pillars: [
@@ -638,7 +636,6 @@ function render() {
   setText("self-post", t(h.selfPost));
   setText("fact1", t(h.fact1)); setText("fact2", t(h.fact2)); setText("fact3", t(h.fact3));
   setText("cta-work", t(h.ctaWork));
-  setText("cta-email", t(h.ctaEmail));
   document.getElementById("cta-github").href = c.githubUrl;
 
   // What I build
