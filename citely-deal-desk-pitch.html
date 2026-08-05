@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Citely Deal Desk — programmable compliance for cross-border settlement.">
+  <title>Citely Deal Desk — Programmable Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===========================================
+       CSS CUSTOM PROPERTIES — change these to retheme the whole deck.
+       =========================================== */
+    :root {
+      --stage-bg: #0a0a0a;
+      --slide-bg: #f7f6f2;
+      --ink: #111318;
+      --muted: #5e6674;
+      --blue: #2453eb;
+      --blue-deep: #10288d;
+      --ice: #e6ebff;
+      --line: rgba(17, 19, 24, .16);
+      --white-line: rgba(255, 255, 255, .32);
+      --font-display: Manrope, sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --ease: cubic-bezier(.16, 1, .3, 1);
+    }
+
+    /* ===========================================
+       BASE STYLES
+       =========================================== */
+    * { box-sizing: border-box; }
+    button { font: inherit; }
+
+    /* ===========================================
+       FIXED 16:9 STAGE: MANDATORY BASE STYLES
+       Include this ENTIRE file in every presentation.
+       Slides are authored at 1920×1080 and scaled as a whole.
+       =========================================== */
+
+    /* 1. Lock the browser viewport */
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: var(--stage-bg, #000);
+    }
+
+    /* 2. Full-window deck viewport */
+    .deck-viewport {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        background: var(--stage-bg, #000);
+    }
+
+    /* 3. Fixed 16:9 design canvas.
+       JavaScript sets transform: translate(...) scale(...). */
+    .deck-stage {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        transform-origin: 0 0;
+        background: var(--slide-bg, #fff);
+    }
+
+    /* 4. Slides stack inside the fixed stage.
+       Content must be laid out at 1920×1080, not reflowed per device. */
+    .slide {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        background: var(--slide-bg, #fff);
+    }
+
+    .slide.active,
+    .slide.visible {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 1;
+    }
+
+    /* 5. Keep media inside authored slide bounds */
+    img,
+    video,
+    canvas,
+    svg {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    /* 6. Presentation chrome stays outside the slide design system */
+    .deck-controls {
+        position: fixed;
+        left: 50%;
+        bottom: 22px;
+        transform: translateX(-50%);
+        z-index: 1000;
+    }
+
+    /* 7. Print one fixed-size slide per page */
+    @media print {
+        html,
+        body {
+            width: 1920px;
+            height: auto;
+            overflow: visible;
+            background: #fff;
+        }
+
+        .deck-viewport {
+            position: static;
+            overflow: visible;
+            background: #fff;
+        }
+
+        .deck-stage {
+            position: static;
+            width: auto;
+            height: auto;
+            transform: none !important;
+            background: none;
+        }
+
+        .slide {
+            position: relative;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            width: 1920px;
+            height: 1080px;
+            break-after: page;
+            page-break-after: always;
+        }
+
+        .slide:last-child {
+            break-after: auto;
+            page-break-after: auto;
+        }
+
+        .deck-controls {
+            display: none !important;
+        }
+    }
+
+    /* 8. Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.2s !important;
+        }
+    }
+
+    /* ===========================================
+       SHARED ELECTRIC STUDIO LAYOUT
+       =========================================== */
+    .slide { color: var(--ink); font-family: var(--font-display); }
+    .slide.light { background: var(--slide-bg); }
+    .slide.blue { background: var(--blue); color: #fff; }
+    .slide.dark { background: #10131b; color: #fff; }
+    .slide-inner { position: relative; height: 100%; padding: 72px 94px; }
+    .topline { display: flex; align-items: center; justify-content: space-between; height: 35px; font: 500 18px/1 var(--font-mono); letter-spacing: .1em; }
+    .brand { color: inherit; text-decoration: none; }
+    .slide-no { opacity: .64; }
+    .eyebrow { margin: 62px 0 20px; font: 500 20px/1.2 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
+    .blue .eyebrow, .dark .eyebrow { color: #c8d6ff; }
+    .title { margin: 0; max-width: 1450px; font-size: 78px; line-height: .98; letter-spacing: -.065em; font-weight: 800; }
+    .title.large { font-size: 124px; line-height: .9; }
+    .lede { margin: 28px 0 0; max-width: 1180px; color: var(--muted); font-size: 31px; line-height: 1.32; letter-spacing: -.025em; }
+    .blue .lede, .dark .lede { color: rgba(255,255,255,.76); }
+    .footer-note { position: absolute; left: 94px; bottom: 55px; font: 400 16px/1.2 var(--font-mono); letter-spacing: .035em; color: var(--muted); }
+    .blue .footer-note, .dark .footer-note { color: rgba(255,255,255,.58); }
+    .logo { object-fit: contain; }
+    .reveal { opacity: 0; transform: translateY(25px); transition: opacity .42s var(--ease), transform .42s var(--ease); }
+    .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+    .slide.visible .reveal:nth-child(1) { transition-delay: .06s; }
+    .slide.visible .reveal:nth-child(2) { transition-delay: .14s; }
+    .slide.visible .reveal:nth-child(3) { transition-delay: .22s; }
+    .slide.visible .reveal:nth-child(4) { transition-delay: .30s; }
+    .slide.visible .reveal:nth-child(5) { transition-delay: .38s; }
+
+    /* ===========================================
+       SLIDE 1 — Title / core proposition
+       =========================================== */
+    .title-top { height: 470px; padding: 78px 94px; position: relative; background: var(--slide-bg); }
+    .title-bottom { height: 610px; padding: 68px 94px; position: relative; background: var(--blue); color: #fff; }
+    .title-top::before { content: ''; position: absolute; inset: 0 0 auto; height: 15px; background: #111318; }
+    .title-logo { position: absolute; right: 94px; top: 116px; width: 142px; height: 142px; mix-blend-mode: multiply; }
+    .title-top .title { margin-top: 92px; font-size: 108px; }
+    .title-bottom .statement { margin: 0; max-width: 1300px; font-size: 58px; line-height: 1.08; letter-spacing: -.055em; font-weight: 700; }
+    .title-bottom .proofline { position: absolute; right: 94px; bottom: 70px; display: flex; align-items: center; gap: 21px; font: 500 18px/1 var(--font-mono); letter-spacing: .08em; }
+    .proofline::before { content: ''; width: 220px; height: 3px; background: #fff; }
+
+    /* ===========================================
+       SLIDE 2 — The present-day bottleneck
+       =========================================== */
+    .human-chain { display: grid; grid-template-columns: 1fr 108px 1fr 108px 1fr; align-items: center; margin-top: 65px; }
+    .human-node { min-height: 262px; padding: 34px; border: 2px solid var(--ink); display: flex; flex-direction: column; justify-content: space-between; }
+    .human-node strong { font-size: 42px; letter-spacing: -.045em; line-height: 1; }
+    .human-node span { color: var(--muted); font-size: 22px; line-height: 1.25; }
+    .human-arrow { position: relative; height: 2px; background: var(--ink); }
+    .human-arrow::after { content: '→'; position: absolute; right: -12px; top: -29px; font-size: 48px; line-height: 1; }
+    .manual-strip { position: absolute; left: 94px; right: 94px; bottom: 105px; padding: 25px 30px; border-left: 11px solid var(--blue); background: var(--ice); font-size: 29px; line-height: 1.28; letter-spacing: -.025em; }
+
+    /* ===========================================
+       SLIDE 3 — The system / independently deployed agent
+       =========================================== */
+    .solution-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 60px; margin-top: 55px; align-items: start; }
+    .solution-copy { padding-top: 15px; }
+    .solution-copy p { max-width: 730px; margin: 0 0 30px; font-size: 30px; line-height: 1.35; letter-spacing: -.025em; }
+    .solution-copy p:last-child { margin-bottom: 0; }
+    .solution-rail { padding: 38px; border: 2px solid #fff; }
+    .solution-rail h3 { margin: 0 0 33px; font: 500 19px/1 var(--font-mono); letter-spacing: .1em; color: #c8d6ff; }
+    .agent-step { display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 20px 0; border-top: 1px solid var(--white-line); }
+    .agent-step:first-of-type { border-top: 0; padding-top: 0; }
+    .agent-step b { color: #c8d6ff; font: 500 19px/1 var(--font-mono); }
+    .agent-step strong { display: block; margin-bottom: 7px; font-size: 28px; letter-spacing: -.035em; }
+    .agent-step span { display: block; color: rgba(255,255,255,.72); font-size: 20px; line-height: 1.3; }
+
+    /* ===========================================
+       SLIDE 4 — README protocol graph
+       =========================================== */
+    .readme-flow-title { max-width: 1510px; font-size: 62px; line-height: 1.02; }
+    .readme-flow { position: relative; height: 500px; margin-top: 30px; }
+    .stack-node { position: absolute; display: grid; place-items: center; min-height: 118px; padding: 18px 24px; border: 2px solid #fff; background: #151a29; color: #fff; text-align: center; font-size: 29px; line-height: 1.13; letter-spacing: -.035em; font-weight: 700; box-shadow: 10px 10px 0 rgba(255,255,255,.12); }
+    .stack-node small { display: block; margin-top: 9px; color: #b9c9ff; font: 500 17px/1.1 var(--font-mono); letter-spacing: .04em; }
+    .node-wallet { left: 6px; top: 175px; width: 300px; }
+    .node-deal { left: 590px; top: 175px; width: 365px; border-color: #c8d6ff; background: #2453eb; }
+    .node-msb { right: 5px; top: 175px; width: 325px; }
+    .node-escrow { left: 850px; top: 372px; width: 345px; }
+    .stack-link { position: absolute; height: 3px; background: #c8d6ff; transform-origin: 0 50%; }
+    .stack-link::after { content: '→'; position: absolute; right: -18px; top: -24px; color: #c8d6ff; font-size: 42px; line-height: 1; }
+    .stack-link.dashed { height: 0; border-top: 3px dashed #c8d6ff; background: none; }
+    .link-wd { left: 307px; top: 234px; width: 282px; }
+    .link-dm { left: 956px; top: 234px; width: 388px; }
+    .link-de { left: 787px; top: 294px; width: 197px; transform: rotate(58deg); }
+    .link-we { left: 280px; top: 300px; width: 670px; transform: rotate(16deg); }
+    .stack-link-label { position: absolute; padding: 7px 10px; background: #10288d; color: #fff; font: 500 15px/1.16 var(--font-mono); letter-spacing: .035em; text-align: center; }
+    .label-wd { left: 350px; top: 128px; width: 196px; }
+    .label-dm { left: 1040px; top: 128px; width: 198px; }
+    .label-de { left: 990px; top: 313px; width: 187px; }
+    .label-we { left: 455px; top: 357px; width: 226px; }
+
+    /* ===========================================
+       SLIDE 5 — Settlement Authorization anatomy
+       =========================================== */
+    .sa-layout { display: grid; grid-template-columns: .92fr 1.08fr; gap: 70px; margin-top: 47px; }
+    .sa-quote { padding: 44px 38px; background: #111318; color: #fff; min-height: 518px; }
+    .sa-quote .quote-mark { color: #7f9bff; font-size: 94px; line-height: .55; }
+    .sa-quote p { margin: 45px 0 37px; font-size: 42px; line-height: 1.08; letter-spacing: -.045em; font-weight: 700; }
+    .sa-quote small { color: rgba(255,255,255,.65); font: 400 17px/1.45 var(--font-mono); }
+    .sa-items { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .sa-item { min-height: 239px; padding: 27px; border: 2px solid var(--ink); }
+    .sa-item b { display: block; margin-bottom: 22px; color: var(--blue); font: 500 18px/1 var(--font-mono); letter-spacing: .08em; }
+    .sa-item strong { display: block; margin-bottom: 10px; font-size: 29px; line-height: 1.05; letter-spacing: -.035em; }
+    .sa-item span { color: var(--muted); font-size: 19px; line-height: 1.33; }
+
+    /* ===========================================
+       SLIDE 6 — Why Arc + Circle
+       =========================================== */
+    .circle-thesis { display: grid; grid-template-columns: 530px 1fr; gap: 74px; margin-top: 54px; }
+    .circle-thesis .big { font-size: 59px; line-height: 1.04; letter-spacing: -.06em; font-weight: 800; }
+    .circle-thesis .big em { color: #c8d6ff; font-style: normal; }
+    .stack { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .stack-card { min-height: 214px; padding: 26px; border: 1px solid var(--white-line); }
+    .stack-card b { display: block; margin-bottom: 30px; color: #c8d6ff; font: 500 17px/1 var(--font-mono); letter-spacing: .08em; }
+    .stack-card strong { display: block; margin-bottom: 9px; font-size: 27px; line-height: 1.05; letter-spacing: -.035em; }
+    .stack-card span { display: block; color: rgba(255,255,255,.74); font-size: 18px; line-height: 1.32; }
+
+    /* ===========================================
+       SLIDE 7 — Investment thesis / closing
+       =========================================== */
+    .closing { background: linear-gradient(135deg, #f7f6f2 0 58%, #2453eb 58% 100%); }
+    .closing .title { margin-top: 120px; max-width: 1200px; font-size: 115px; }
+    .closing .lede { max-width: 820px; font-size: 33px; }
+    .closing-logo { position: absolute; right: 165px; bottom: 164px; width: 238px; height: 238px; mix-blend-mode: multiply; }
+    .closing-arrow { position: absolute; left: 94px; bottom: 112px; display: flex; align-items: center; gap: 22px; font: 500 21px/1 var(--font-mono); letter-spacing: .075em; }
+    .closing-arrow::before { content: ''; width: 190px; height: 3px; background: var(--ink); }
+
+    /* ===========================================
+       OUTSIDE-STAGE CONTROLS AND INLINE EDITING
+       =========================================== */
+    .deck-controls { top: 18px; bottom: auto; display: flex; align-items: center; gap: 14px; padding: 8px 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; background: rgba(10,10,10,.76); color: #fff; backdrop-filter: blur(10px); }
+    .deck-controls button { width: 31px; height: 31px; border: 0; border-radius: 50%; background: transparent; color: #fff; cursor: pointer; font-size: 22px; line-height: 1; }
+    .deck-controls button:hover { background: rgba(255,255,255,.16); }
+    .page-label { min-width: 64px; text-align: center; font: 500 12px/1 var(--font-mono); letter-spacing: .08em; }
+    .progress { width: 112px; height: 3px; overflow: hidden; background: rgba(255,255,255,.27); }
+    .progress span { display: block; width: 14.29%; height: 100%; background: #fff; transition: width .24s var(--ease); }
+    .edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+    .edit-toggle { position: fixed; top: 18px; left: 18px; width: 44px; height: 44px; border: 0; border-radius: 50%; opacity: 0; pointer-events: none; background: #fff; color: #111318; box-shadow: 0 5px 20px rgba(0,0,0,.3); transition: opacity .3s ease; z-index: 10001; cursor: pointer; }
+    .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+    .editing [data-edit] { outline: 2px dashed #2453eb; outline-offset: 5px; cursor: text; }
+    .editing [data-edit]:focus { background: rgba(255,255,255,.28); }
+  </style>
+</head>
+<body>
+  <div class="deck-viewport">
+    <main class="deck-stage" id="deckStage" aria-live="polite">
+      <!-- ===========================================
+           SLIDE 1: The opening proposition
+           =========================================== -->
+      <section class="slide active visible" aria-label="Citely Deal Desk title slide">
+        <div class="title-top">
+          <div class="topline reveal"><span class="brand">CITELY / DEAL DESK</span><span class="slide-no">ARC TESTNET · 2026</span></div>
+          <img class="title-logo reveal logo" alt="Citely logo" src="data:image/png;base64,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ciBJngHkxAASO5Bn7M17RgCxAWSMxYrLAGIDCEDkAHIbINMFWjz+wE8AuQ2Q9y3mAOIrgNwGyN/WJ7NXyQN0jgWQ+wB522IOIL4CyJ2AvN8qwhHESwC5F5Akz/5eLUC8BJCbAXmOswDiJYDcDkiS9G+vkpP0YwHkhkCsCoB4CSB3BDI+Bh0gXgKIDSBjrMVaBhAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAi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">
+          <h1 class="title reveal" data-edit="s1-title">Compliance,<br>made executable.</h1>
+        </div>
+        <div class="title-bottom">
+          <p class="statement reveal" data-edit="s1-statement">Wallet-verifiable settlement conditions for cross-border deals.</p>
+          <div class="proofline reveal">CROSS-BORDER, RECOMPILED</div>
+        </div>
+      </section>
+
+      <!-- ===========================================
+           SLIDE 2: Why the current process does not scale
+           =========================================== -->
+      <section class="slide light" aria-label="The manual compliance bottleneck">
+        <div class="slide-inner">
+          <div class="topline"><span class="brand">CITELY / DEAL DESK</span><span class="slide-no">02 / 07</span></div>
+          <div class="eyebrow reveal">The status quo</div>
+          <h2 class="title reveal" data-edit="s2-title">Cross-border payments are still designed for humans.</h2>
+          <div class="human-chain reveal">
+            <div class="human-node"><strong data-edit="s2-node1">Importer<br>pays exporter</strong><span data-edit="s2-copy1">A simple commercial instruction starts the process.</span></div>
+            <div class="human-arrow" aria-hidden="true"></div>
+            <div class="human-node"><strong data-edit="s2-node2">Lawyers, banks,<br>and reviewers</strong><span data-edit="s2-copy2">Manual interpretation, data requests, and handoffs.</span></div>
+            <div class="human-arrow" aria-hidden="true"></div>
+            <div class="human-node"><strong data-edit="s2-node3">Settlement<br>or delay</strong><span data-edit="s2-copy3">The outcome depends on a slow, fragmented process.</span></div>
+          </div>
+          <div class="manual-strip reveal" data-edit="s2-strip"><b>Today:</b> compliance is a cost center placed beside settlement — not a verifiable condition that can control settlement itself.</div>
+          <div class="footer-note">Problem framing · Read as: manual review is the bottleneck, not the payment rail.</div>
+        </div>
+      </section>
+
+      <!-- ===========================================
+           SLIDE 3: The Citely system answer
+           =========================================== -->
+      <section class="slide blue" aria-label="Citely is an independently deployed compliance agent">
+        <div class="slide-inner">
+          <div class="topline"><span class="brand">CITELY / DEAL DESK</span><span class="slide-no">03 / 07</span></div>
+          <div class="eyebrow reveal">The answer</div>
+          <h2 class="title reveal" data-edit="s3-title">An independently deployed compliance intelligence agent.</h2>
+          <div class="solution-grid">
+            <div class="solution-copy reveal">
+              <p data-edit="s3-copy1">A human, company, or AI agent hires Citely by creating an ERC-8183 job.</p>
+              <p data-edit="s3-copy2">Citely does not claim to know every regulation. It buys evidence from specialized compliance agents, then compiles the evidence into conditions a wallet can verify.</p>
+            </div>
+            <aside class="solution-rail reveal" aria-label="Citely operating model">
+              <h3>FROM DEAL TO SETTLEMENT AUTHORIZATION</h3>
+              <div class="agent-step"><b>01</b><div><strong data-edit="s3-step1">Receive a bounded job</strong><span data-edit="s3-step1copy">The scope, payee, amount, expiry, and escrow state are explicit.</span></div></div>
+              <div class="agent-step"><b>02</b><div><strong data-edit="s3-step2">Buy regulatory evidence</strong><span data-edit="s3-step2copy">Specialized agents return deterministic evidence and legal sources.</span></div></div>
+              <div class="agent-step"><b>03</b><div><strong data-edit="s3-step3">Compile release conditions</strong><span data-edit="s3-step3copy">The wallet verifies the proof before escrow can complete.</span></div></div>
+            </aside>
+          </div>
+          <div class="footer-note">Citely is an agent that purchases evidence; it is not a monolithic legal database.</div>
+        </div>
+      </section>
+
+      <!-- ===========================================
+           SLIDE 4: Arc + Circle agent stack (copied from README)
+           =========================================== -->
+      <section class="slide dark" aria-label="Built on Arc and Circle Agent Stack">
+        <div class="slide-inner">
+          <div class="topline"><span class="brand">CITELY / DEAL DESK</span><span class="slide-no">04 / 07</span></div>
+          <div class="eyebrow reveal">Built on Arc + Circle Agent Stack</div>
+          <h2 class="title readme-flow-title reveal" data-edit="s4-title">Two agents, two wallets, paying each other in USDC — no human in the loop.</h2>
+          <div class="readme-flow reveal" aria-label="Caller wallet pays Deal Desk agent through x402; Deal Desk pays msb-agent through x402; wallet and Deal Desk independently reference the ERC-8183 escrow">
+            <div class="stack-node node-wallet" data-edit="s4-wallet">Caller's wallet</div>
+            <div class="stack-node node-deal" data-edit="s4-deal">Deal Desk agent<small>ERC-8004 · 854638</small></div>
+            <div class="stack-node node-msb" data-edit="s4-msb">msb-agent<small>ERC-8004 · 851930</small></div>
+            <div class="stack-node node-escrow" data-edit="s4-escrow">ERC-8183 escrow</div>
+            <div class="stack-link link-wd" aria-hidden="true"></div><div class="stack-link-label label-wd" data-edit="s4-wd">x402 · USDC<br>Circle facilitator</div>
+            <div class="stack-link link-dm" aria-hidden="true"></div><div class="stack-link-label label-dm" data-edit="s4-dm">x402 · USDC<br>Circle Gateway</div>
+            <div class="stack-link dashed link-de" aria-hidden="true"></div><div class="stack-link-label label-de" data-edit="s4-de">SA hash + escrow state</div>
+            <div class="stack-link dashed link-we" aria-hidden="true"></div><div class="stack-link-label label-we" data-edit="s4-we">reads SA, decides<br>independently</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===========================================
+           SLIDE 5: What the Settlement Authorization proves
+           =========================================== -->
+      <section class="slide light" aria-label="Settlement Authorization anatomy">
+        <div class="slide-inner">
+          <div class="topline"><span class="brand">CITELY / DEAL DESK</span><span class="slide-no">05 / 07</span></div>
+          <div class="eyebrow reveal">The output</div>
+          <h2 class="title reveal" data-edit="s5-title">A Settlement Authorization is a conditional proof — not a payment instruction.</h2>
+          <div class="sa-layout">
+            <blockquote class="sa-quote reveal"><div class="quote-mark">“</div><p data-edit="s5-quote">The wallet decides whether the evidence permits the release.</p><small>Citely never takes custody of client funds. The authorization constrains execution; it does not command a wallet to pay.</small></blockquote>
+            <div class="sa-items reveal">
+              <div class="sa-item"><b>BOUND</b><strong data-edit="s5-a">Specific job + payee + amount</strong><span data-edit="s5-acopy">The proof is valid only for the deal it names and until its expiry.</span></div>
+              <div class="sa-item"><b>GROUNDED</b><strong data-edit="s5-b">Evidence hash + module version</strong><span data-edit="s5-bcopy">Every decision links to a check item and legal source.</span></div>
+              <div class="sa-item"><b>DETERMINISTIC</b><strong data-edit="s5-c">PASS / HOLD / ESCALATE</strong><span data-edit="s5-ccopy">Release conditions derive from module results, not a model verdict.</span></div>
+              <div class="sa-item"><b>VERIFIABLE</b><strong data-edit="s5-d">EIP-712 signed attestation</strong><span data-edit="s5-dcopy">A wallet can verify the authorization offline before settlement.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===========================================
+           SLIDE 6: Why Arc and Circle are the enabling stack
+           =========================================== -->
+      <section class="slide blue" aria-label="Why Arc and Circle">
+        <div class="slide-inner">
+          <div class="topline"><span class="brand">CITELY / DEAL DESK</span><span class="slide-no">06 / 07</span></div>
+          <div class="eyebrow reveal">Why now · Why Arc</div>
+          <h2 class="title reveal" data-edit="s6-title">This project exists because of Circle.</h2>
+          <div class="circle-thesis">
+            <p class="big reveal" data-edit="s6-big">Circle turns compliance from a <em>cost center</em> into programmable infrastructure.</p>
+            <div class="stack reveal">
+              <div class="stack-card"><b>x402</b><strong data-edit="s6-x402">Agents can buy services</strong><span data-edit="s6-x402copy">Citely pays specialized compliance agents in USDC, per call.</span></div>
+              <div class="stack-card"><b>ERC-8004</b><strong data-edit="s6-8004">Agents can discover agents</strong><span data-edit="s6-8004copy">Capabilities, pricing, and endpoints are discoverable on-chain.</span></div>
+              <div class="stack-card"><b>ERC-8183</b><strong data-edit="s6-8183">Compliance can control settlement</strong><span data-edit="s6-8183copy">The authorization binds directly to an escrow job and its outcome.</span></div>
+              <div class="stack-card"><b>ARC</b><strong data-edit="s6-arc">A native USDC transaction rail</strong><span data-edit="s6-arccopy">Agent payments and testnet gas share the same stablecoin-first environment.</span></div>
+            </div>
+          </div>
+          <div class="footer-note">Without x402, ERC-8004, and ERC-8183, this business model is a workflow — not infrastructure.</div>
+        </div>
+      </section>
+
+      <!-- ===========================================
+           SLIDE 7: Closing / investment thesis
+           =========================================== -->
+      <section class="slide closing" aria-label="Closing investment thesis">
+        <div class="slide-inner">
+          <div class="topline"><span class="brand">CITELY / DEAL DESK</span><span class="slide-no">07 / 07</span></div>
+          <div class="eyebrow reveal">The opportunity</div>
+          <h2 class="title reveal" data-edit="s9-title">Make every cross-border settlement able to prove why it can move.</h2>
+          <p class="lede reveal" data-edit="s9-copy">Citely connects independently deployed agents, paid evidence, and wallet-verifiable authorization into a programmable compliance layer for global commerce.</p>
+          <div class="closing-arrow reveal">CITELY / DEAL DESK</div>
+          <img class="closing-logo reveal logo" alt="Citely logo" src="data:image/png;base64,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ciBJngHkxAASO5Bn7M17RgCxAWSMxYrLAGIDCEDkAHIbINMFWjz+wE8AuQ2Q9y3mAOIrgNwGyN/WJ7NXyQN0jgWQ+wB522IOIL4CyJ2AvN8qwhHESwC5F5Akz/5eLUC8BJCbAXmOswDiJYDcDkiS9G+vkpP0YwHkhkCsCoB4CSB3BDI+Bh0gXgKIDSBjrMVaBhAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAiBxAbQAAi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">
+          <div class="footer-note">Arc Testnet demo only · Compliance output is not legal advice.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Presentation navigation stays outside the scaled stage. -->
+  <nav class="deck-controls" aria-label="Slide navigation">
+    <button id="prevSlide" aria-label="Previous slide">‹</button>
+    <span class="page-label" id="pageLabel">01 / 07</span>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <button id="nextSlide" aria-label="Next slide">›</button>
+  </nav>
+
+  <!-- Inline editing is available by hovering or clicking top-left, or pressing E. -->
+  <div class="edit-hotzone" aria-label="Toggle edit mode"></div>
+  <button class="edit-toggle" id="editToggle" title="Edit mode (E)" aria-label="Toggle edit mode">✎</button>
+
+  <script>
+    /* ===========================================
+       SLIDE PRESENTATION CONTROLLER
+       Fixed-stage scaling, keyboard / swipe / wheel navigation.
+       =========================================== */
+    class SlidePresentation {
+      constructor() {
+        this.slides = [...document.querySelectorAll('.slide')];
+        this.stage = document.getElementById('deckStage');
+        this.currentSlide = 0;
+        this.initialSlide = Math.max(0, Math.min(this.slides.length - 1, Number(new URLSearchParams(window.location.search).get('slide') || 1) - 1));
+        this.wheelLocked = false;
+        this.setupStageScale();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        document.getElementById('prevSlide').addEventListener('click', () => this.go(-1));
+        document.getElementById('nextSlide').addEventListener('click', () => this.go(1));
+        this.showSlide(this.initialSlide);
+      }
+
+      setupStageScale() {
+        const scale = () => {
+          const factor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+          const x = (window.innerWidth - 1920 * factor) / 2;
+          const y = (window.innerHeight - 1080 * factor) / 2;
+          this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+      }
+
+      setupKeyboardNav() {
+        document.addEventListener('keydown', event => {
+          if (event.target.getAttribute('contenteditable') === 'true') return;
+          if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(event.key)) { event.preventDefault(); this.go(1); }
+          if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key)) { event.preventDefault(); this.go(-1); }
+          if (event.key === 'Home') this.showSlide(0);
+          if (event.key === 'End') this.showSlide(this.slides.length - 1);
+        });
+      }
+
+      setupTouchNav() {
+        let startX = 0;
+        document.addEventListener('touchstart', event => { startX = event.changedTouches[0].screenX; }, { passive: true });
+        document.addEventListener('touchend', event => {
+          const delta = event.changedTouches[0].screenX - startX;
+          if (Math.abs(delta) > 48) this.go(delta < 0 ? 1 : -1);
+        }, { passive: true });
+      }
+
+      setupWheelNav() {
+        document.addEventListener('wheel', event => {
+          if (this.wheelLocked || Math.abs(event.deltaY) < 12) return;
+          this.go(event.deltaY > 0 ? 1 : -1);
+          this.wheelLocked = true;
+          setTimeout(() => { this.wheelLocked = false; }, 460);
+        }, { passive: true });
+      }
+
+      go(delta) { this.showSlide(this.currentSlide + delta); }
+
+      showSlide(index) {
+        this.currentSlide = Math.max(0, Math.min(index, this.slides.length - 1));
+        this.slides.forEach((slide, i) => {
+          const active = i === this.currentSlide;
+          slide.classList.toggle('active', active);
+          slide.classList.toggle('visible', active);
+        });
+        document.getElementById('pageLabel').textContent = `${String(this.currentSlide + 1).padStart(2, '0')} / ${String(this.slides.length).padStart(2, '0')}`;
+        document.getElementById('progressBar').style.width = `${((this.currentSlide + 1) / this.slides.length) * 100}%`;
+      }
+    }
+
+    /* ===========================================
+       INLINE EDITOR
+       Press E or use the top-left hotzone. Text auto-saves locally.
+       Ctrl/Cmd+S downloads the current edited HTML file.
+       =========================================== */
+    class InlineEditor {
+      constructor() {
+        this.isActive = false;
+        this.toggle = document.getElementById('editToggle');
+        this.fields = [...document.querySelectorAll('[data-edit]')];
+        this.storageKey = 'citely-deal-desk-pitch-edits';
+        this.load();
+        this.fields.forEach(field => field.addEventListener('input', () => this.save()));
+        this.toggle.addEventListener('click', () => this.toggleEditMode());
+        this.setupHotzone();
+        document.addEventListener('keydown', event => {
+          if ((event.key === 'e' || event.key === 'E') && event.target.getAttribute('contenteditable') !== 'true') this.toggleEditMode();
+          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); this.download(); }
+        });
+      }
+
+      setupHotzone() {
+        const hotzone = document.querySelector('.edit-hotzone');
+        let hideTimeout = null;
+        const show = () => { clearTimeout(hideTimeout); this.toggle.classList.add('show'); };
+        const hide = () => { hideTimeout = setTimeout(() => { if (!this.isActive) this.toggle.classList.remove('show'); }, 400); };
+        hotzone.addEventListener('mouseenter', show);
+        hotzone.addEventListener('mouseleave', hide);
+        this.toggle.addEventListener('mouseenter', show);
+        this.toggle.addEventListener('mouseleave', hide);
+        hotzone.addEventListener('click', () => this.toggleEditMode());
+      }
+
+      toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('editing', this.isActive);
+        this.toggle.classList.toggle('active', this.isActive);
+        this.fields.forEach(field => { field.contentEditable = String(this.isActive); });
+      }
+
+      save() {
+        const values = Object.fromEntries(this.fields.map(field => [field.dataset.edit, field.innerHTML]));
+        localStorage.setItem(this.storageKey, JSON.stringify(values));
+      }
+
+      load() {
+        try {
+          const values = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+          this.fields.forEach(field => { if (values[field.dataset.edit]) field.innerHTML = values[field.dataset.edit]; });
+        } catch (_) { /* A malformed local value should never block the deck. */ }
+      }
+
+      download() {
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll('[contenteditable]').forEach(field => field.removeAttribute('contenteditable'));
+        const blob = new Blob(['<!doctype html>\n' + clone.outerHTML], { type: 'text/html' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'citely-deal-desk-pitch-edited.html';
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+    }
+
+    const presentation = new SlidePresentation();
+    const editor = new InlineEditor();
+  </script>
+</body>
+</html>

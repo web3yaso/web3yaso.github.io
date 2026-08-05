@@ -237,7 +237,10 @@
     color: #8a7b3d; background: #f6f0da; border: 1px solid #e2d6a8;
     white-space: nowrap; transform: translateY(-1px);
   }
-  .card-arrow { color: #6f5f9c; font-size: 15px; }
+  .card-arrow { color: #6f5f9c; font-size: 15px; text-decoration: none; }
+  .card-links { margin-top: 14px; display: flex; gap: 18px; }
+  .card-links a { color: #6f5f9c; font-size: 14px; text-decoration: none; }
+  .card-links a:hover { text-decoration: underline; }
   .card p { font-size: 15px; line-height: 1.95; color: #5a5f72; }
   .card-bullets { list-style: none; display: flex; flex-direction: column; gap: 9px; }
   .card-bullets li {
@@ -560,6 +563,16 @@ const content = {
       { zh: "把一趟家庭旅行变成个性化的双语 AI 绘本", en: "Turns a family trip into a personalized, bilingual AI picture book" },
       { zh: "文字 · 插画 · 配音 · 播放，100% 在设备本地完成", en: "Written, illustrated, narrated, played 100% on-device" },
       { zh: "P2P 把重活从平板卸载到笔记本；不上云、不需账号", en: "Heavy authoring offloaded tablet → laptop over P2P; no cloud, no accounts" }
+    ], star: null },
+    { href: "https://github.com/web3yaso/citely-deal-desk", meta: "Encode Arc hackathon · x402 · ERC-8004 · ERC-8183", title: "Citely Deal Desk", arrow: "GitHub →", bullets: [
+      { zh: "把跨境合规判定变成钱包可离线验证的条件性证明（Settlement Authorization）", en: "Turns cross-border compliance verdicts into wallet-verifiable conditional proofs (Settlement Authorizations)" },
+      { zh: "注册为链上可发现的 ERC-8004 agent，API 通过 x402 按次计费、无需 API key", en: "A discoverable on-chain ERC-8004 agent; x402-metered API — no key, no account" },
+      { zh: "ERC-8183 托管：钱包先验证 SA 再放款，Citely 全程不碰资金；demo 已上线", en: "ERC-8183 escrow: the wallet verifies the SA before releasing a cent — Citely never touches funds; live demo" }
+    ], links: [{ href: "citely-deal-desk-pitch.html", label: "Pitch deck →" }], star: null },
+    { href: "https://github.com/web3yaso/escrowfi", meta: "Ignyte hackathon · Arc · Trade finance · USDC", title: "EscrowFi", arrow: "GitHub →", bullets: [
+      { zh: "SME 跨境贸易融资：进口商锁定 USDC 托管，出口商凭合规证明 T+0 拿到垫资", en: "SME trade finance on Arc: the importer locks USDC in escrow, the exporter gets a T+0 advance on a compliance proof" },
+      { zh: "放款闸门是可本地重验的 SA 证明而非信任——无有效证明，一分钱不动", en: "The credit gate is a locally re-verified SA proof, not trust — no valid proof, no money" },
+      { zh: "每笔完成的交易沉淀为链上可重验的 Credit Passport（合规即抵押物）", en: "Every completed cycle becomes a line in an on-chain, re-verifiable Credit Passport — compliance as collateral" }
     ], star: null }
   ],
   expTitle: { zh: "经历", en: "Where I've worked" },
@@ -704,20 +717,47 @@ function render() {
   const cardsBox = document.getElementById("cards");
   cardsBox.innerHTML = "";
   c.cards.forEach((card) => {
-    const a = el("a", "card");
-    a.href = card.href;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
+    // Cards with secondary links use a <div> container (anchors can't nest);
+    // the whole card stays clickable via JS and the arrow is a real link.
+    const hasLinks = Array.isArray(card.links) && card.links.length > 0;
+    const a = el(hasLinks ? "div" : "a", "card");
+    if (hasLinks) {
+      a.style.cursor = "pointer";
+      a.addEventListener("click", (e) => {
+        if (!e.target.closest("a")) window.open(card.href, "_blank", "noopener");
+      });
+    } else {
+      a.href = card.href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
     a.appendChild(el("div", "card-meta", card.meta));
     const row = el("div", "card-title-row");
     const titleGroup = el("div", "card-title-group");
     titleGroup.appendChild(el("h3", null, t(card.title)));
     if (card.wip) titleGroup.appendChild(el("span", "card-wip", t(card.wip)));
-    row.append(titleGroup, el("span", "card-arrow", card.arrow));
+    const arrow = el(hasLinks ? "a" : "span", "card-arrow", card.arrow);
+    if (hasLinks) {
+      arrow.href = card.href;
+      arrow.target = "_blank";
+      arrow.rel = "noopener noreferrer";
+    }
+    row.append(titleGroup, arrow);
     a.appendChild(row);
     const ul = el("ul", "card-bullets");
     card.bullets.forEach((b) => ul.appendChild(el("li", null, t(b))));
     a.appendChild(ul);
+    if (hasLinks) {
+      const linksRow = el("div", "card-links");
+      card.links.forEach((l) => {
+        const la = el("a", null, l.label);
+        la.href = l.href;
+        la.target = "_blank";
+        la.rel = "noopener noreferrer";
+        linksRow.appendChild(la);
+      });
+      a.appendChild(linksRow);
+    }
     if (card.star) a.appendChild(el("div", "card-star", "★ " + card.star));
     cardsBox.appendChild(a);
   });
