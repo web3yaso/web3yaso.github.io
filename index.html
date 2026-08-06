@@ -9,6 +9,10 @@
 <meta name="keywords" content="Sophie Huang, agent payments, x402, stablecoin, Web3 compliance, MCP server, AI agent, EAS, Binance, BNB Chain, builder, portfolio">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://buildersophie.xyz/">
+<link rel="alternate" hreflang="en" href="https://buildersophie.xyz/?lang=en">
+<link rel="alternate" hreflang="zh" href="https://buildersophie.xyz/?lang=zh">
+<link rel="alternate" hreflang="fr" href="https://buildersophie.xyz/?lang=fr">
+<link rel="alternate" hreflang="x-default" href="https://buildersophie.xyz/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -22,6 +26,7 @@
 <meta property="og:image:alt" content="Sophie Huang — builder in agent payments and Web3 compliance">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="fr_FR">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
@@ -94,11 +99,22 @@
   .nav-links { display: flex; gap: 30px; font-size: 14px; align-items: baseline; flex-wrap: wrap; }
   .nav-links a { text-decoration: none; color: #3b3f4e; }
   .nav-links a:hover { color: #5a4b85; }
-  .lang-btn {
-    background: none; border: none; font-size: 14px; cursor: pointer;
-    color: #3b3f4e; text-decoration: underline; text-underline-offset: 3px;
-    font-family: inherit;
+  .lang-select-wrap { position: relative; display: inline-flex; align-items: baseline; }
+  .lang-select {
+    appearance: none; -webkit-appearance: none;
+    background: none; border: none; margin: 0; padding: 0 15px 0 0;
+    font-family: inherit; font-size: 14px; line-height: 1;
+    color: #3b3f4e; cursor: pointer;
   }
+  .lang-select:hover { color: #5a4b85; }
+  .lang-select:focus-visible { outline: 2px solid #a795c9; outline-offset: 3px; border-radius: 2px; }
+  .lang-select-wrap::after {
+    content: ""; position: absolute; right: 1px; top: 3px;
+    width: 5.5px; height: 5.5px; pointer-events: none;
+    border-right: 1.4px solid #787d90; border-bottom: 1.4px solid #787d90;
+    transform: rotate(45deg);
+  }
+  .lang-select-wrap:hover::after { border-color: #5a4b85; }
 
   /* ===== Hero ===== */
   header {
@@ -371,7 +387,9 @@
     <a href="#top" class="nav-brand" id="brand"></a>
     <div class="nav-links">
       <span id="nav-items" style="display: contents;"></span>
-      <button class="lang-btn" id="lang-toggle"></button>
+      <span class="lang-select-wrap">
+        <select class="lang-select" id="lang-select" aria-label="Language"></select>
+      </span>
     </div>
   </nav>
 
@@ -505,144 +523,152 @@
 <script>
 // ===================================================================
 // CONTENT — this is the "CMS" surface. Edit these values directly.
-// Every {zh, en} pair is a bilingual field. Arrays add/remove items.
+// Every {zh, en, fr} object is a localized field. Arrays add/remove items.
+// A missing translation falls back to en, then zh.
 // ===================================================================
 const content = {
   brand: "Sophie Huang",
   githubUrl: "https://github.com/web3yaso",
   showAvailability: true,
   nav: [
-    { href: "#build", label: { zh: "核心能力", en: "Capabilities" } },
-    { href: "#work", label: { zh: "作品", en: "Work" } },
-    { href: "#experience", label: { zh: "经历", en: "Experience" } },
-    { href: "#stack", label: { zh: "技术栈", en: "Stack" } },
-    { href: "#contact", label: { zh: "联系", en: "Contact" } }
+    { href: "#build", label: { zh: "核心能力", en: "Capabilities", fr: "Compétences" } },
+    { href: "#work", label: { zh: "作品", en: "Work", fr: "Projets" } },
+    { href: "#experience", label: { zh: "经历", en: "Experience", fr: "Parcours" } },
+    { href: "#stack", label: { zh: "技术栈", en: "Stack", fr: "Stack" } },
+    { href: "#contact", label: { zh: "联系", en: "Contact", fr: "Contact" } }
   ],
   hero: {
     name: "Sophie Huang",
-    role: { zh: "为 AI agent 造支付与合规基础设施", en: "Building payment & compliance infra at the edge of the agent economy" },
-    kickerLead: { zh: "正在寻找新机会", en: "Open to new opportunities" },
-    kickerRest: { zh: "AGENT PAYMENTS · STABLECOIN INFRA · WEB3 COMPLIANCE", en: "AGENT PAYMENTS · STABLECOIN INFRA · WEB3 COMPLIANCE" },
+    role: { zh: "为 AI agent 造支付与合规基础设施", en: "Building payment & compliance infra at the edge of the agent economy", fr: "Je construis l’infrastructure de paiement et de conformité de l’économie des agents" },
+    kickerLead: { zh: "正在寻找新机会", en: "Open to new opportunities", fr: "Ouverte aux nouvelles opportunités" },
+    kickerRest: { zh: "AGENT PAYMENTS · STABLECOIN INFRA · WEB3 COMPLIANCE", en: "AGENT PAYMENTS · STABLECOIN INFRA · WEB3 COMPLIANCE", fr: "PAIEMENTS D’AGENTS · INFRA STABLECOIN · CONFORMITÉ WEB3" },
     tags: [
-      { title: { zh: "Agency", en: "Agency" }, sub: { zh: "想到就去做", en: "just build it" } },
-      { title: { zh: "Distribution", en: "Distribution" }, sub: { zh: "让东西被看见", en: "make it seen" } },
-      { title: { zh: "Taste", en: "Taste" }, sub: { zh: "对产品有审美", en: "an eye for product" } }
+      { title: { zh: "Agency", en: "Agency", fr: "Agency" }, sub: { zh: "想到就去做", en: "just build it", fr: "passer à l’acte" } },
+      { title: { zh: "Distribution", en: "Distribution", fr: "Distribution" }, sub: { zh: "让东西被看见", en: "make it seen", fr: "le faire voir" } },
+      { title: { zh: "Taste", en: "Taste", fr: "Taste" }, sub: { zh: "对产品有审美", en: "an eye for product", fr: "l’œil produit" } }
     ],
-    selfPre: { zh: "我调试过", en: "I’ve debugged " },
-    selfUnder: { zh: "流动中的资金", en: "money in motion" },
-    selfPost: { zh: "——从链上交易失败到对账异常。现在我在为 AI agent 造更安全的支付轨道。", en: " — from failed on-chain transactions to reconciliation breaks. Now I’m building safer payment rails for AI agents." },
-    fact1: { zh: "Canada-based", en: "Canada-based" },
-    fact2: { zh: "Wallet & trading systems", en: "Wallet & trading systems" },
-    fact3: { zh: "Agent payment infra", en: "Agent payment infra" },
-    ctaWork: { zh: "看作品 →", en: "View work →" }
+    selfPre: { zh: "我调试过", en: "I’ve debugged ", fr: "J’ai débogué " },
+    selfUnder: { zh: "流动中的资金", en: "money in motion", fr: "l’argent en mouvement" },
+    selfPost: { zh: "——从链上交易失败到对账异常。现在我在为 AI agent 造更安全的支付轨道。", en: " — from failed on-chain transactions to reconciliation breaks. Now I’m building safer payment rails for AI agents.", fr: " — des transactions on-chain échouées aux écarts de rapprochement. Aujourd’hui, je construis des rails de paiement plus sûrs pour les agents IA." },
+    fact1: { zh: "Canada-based", en: "Canada-based", fr: "Basée au Canada" },
+    fact2: { zh: "Wallet & trading systems", en: "Wallet & trading systems", fr: "Wallets & systèmes de trading" },
+    fact3: { zh: "Agent payment infra", en: "Agent payment infra", fr: "Infra de paiement pour agents" },
+    ctaWork: { zh: "看作品 →", en: "View work →", fr: "Voir les projets →" }
   },
-  buildTitle: { zh: "三种能力，一个交叉点", en: "Three capabilities, one overlap" },
+  buildTitle: { zh: "三种能力，一个交叉点", en: "Three capabilities, one overlap", fr: "Trois compétences, une intersection" },
   pillars: [
-    { dot: "#8fa9c4", color: "#47688a", title: { zh: "Agency｜想到就去做", en: "Agency — just build it" }, body: { zh: "不等许可、不等完美方案。Citely 从想法到可交互 demo，产品、前后端、链上、部署一个人扛下来。", en: "No waiting for permission or a perfect plan. Citely went from idea to a working demo — product, full stack, on-chain, deploy, all me." } },
-    { dot: "#9cb894", color: "#54724c", title: { zh: "Taste｜对产品有审美", en: "Taste — an eye for product" }, body: { zh: "技术只是手段。把晦涩的合规法律做成能照着做的 playbook——不是堆信息，而是替用户想清楚下一步。", en: "Tech is just the means. I turn dense compliance law into a playbook people can follow — not more information, but their next step, figured out." } },
-    { dot: "#a795c9", color: "#6f5f9c", title: { zh: "Distribution｜让东西被看见", en: "Distribution — make it seen" }, body: { zh: "再好的产品没人用等于零。我习惯把做的事讲成一个能传出去、让人行动的故事。", en: "A product no one uses is worth zero. I frame what I build as a story that travels and makes people act." } }
+    { dot: "#8fa9c4", color: "#47688a", title: { zh: "Agency｜想到就去做", en: "Agency — just build it", fr: "Agency — passer à l’acte" }, body: { zh: "不等许可、不等完美方案。Citely 从想法到可交互 demo，产品、前后端、链上、部署一个人扛下来。", en: "No waiting for permission or a perfect plan. Citely went from idea to a working demo — product, full stack, on-chain, deploy, all me.", fr: "Je n’attends ni permission ni plan parfait. Citely est passé de l’idée à une démo fonctionnelle : produit, full stack, on-chain, déploiement — tout, seule." } },
+    { dot: "#9cb894", color: "#54724c", title: { zh: "Taste｜对产品有审美", en: "Taste — an eye for product", fr: "Taste — l’œil produit" }, body: { zh: "技术只是手段。把晦涩的合规法律做成能照着做的 playbook——不是堆信息，而是替用户想清楚下一步。", en: "Tech is just the means. I turn dense compliance law into a playbook people can follow — not more information, but their next step, figured out.", fr: "La technique n’est qu’un moyen. Je transforme un droit de la conformité opaque en un playbook que l’on peut suivre : pas plus d’information, mais l’étape suivante, déjà clarifiée." } },
+    { dot: "#a795c9", color: "#6f5f9c", title: { zh: "Distribution｜让东西被看见", en: "Distribution — make it seen", fr: "Distribution — le faire voir" }, body: { zh: "再好的产品没人用等于零。我习惯把做的事讲成一个能传出去、让人行动的故事。", en: "A product no one uses is worth zero. I frame what I build as a story that travels and makes people act.", fr: "Un produit que personne n’utilise ne vaut rien. Je raconte ce que je construis comme une histoire qui circule et pousse à l’action." } }
   ],
-  workTitle: { zh: "精选作品", en: "What I've shipped" },
+  workTitle: { zh: "精选作品", en: "What I've shipped", fr: "Ce que j’ai livré" },
   cards: [
     { href: "https://www.citely.info", meta: "Next.js · TypeScript · x402 · EAS · MCP", title: "Citely", arrow: "citely.info →", bullets: [
-      { zh: "一手搭起全栈：x402 微支付 · 链上存证（EAS）· MCP server", en: "Built the full stack solo: x402 micropayments, on-chain attestation (EAS), MCP server" },
-      { zh: "让 AI agent 无需人类介入就能自主付费、按需取用内容", en: "AI agents pay for and pull content autonomously — no human in the loop" },
-      { zh: "把合规法律做成创业者能直接照做的可视化 playbook；demo 已上线", en: "Turns compliance law into visual playbooks founders can act on; live demo" }
+      { zh: "一手搭起全栈：x402 微支付 · 链上存证（EAS）· MCP server", en: "Built the full stack solo: x402 micropayments, on-chain attestation (EAS), MCP server", fr: "Full stack construit en solo : micropaiements x402, attestation on-chain (EAS), serveur MCP" },
+      { zh: "让 AI agent 无需人类介入就能自主付费、按需取用内容", en: "AI agents pay for and pull content autonomously — no human in the loop", fr: "Les agents IA paient et récupèrent le contenu en autonomie — sans intervention humaine" },
+      { zh: "把合规法律做成创业者能直接照做的可视化 playbook；demo 已上线", en: "Turns compliance law into visual playbooks founders can act on; live demo", fr: "Transforme le droit de la conformité en playbooks visuels actionnables par les fondateurs ; démo en ligne" }
     ], star: null },
-    { href: "https://stablecoin-policy.vercel.app/", meta: "Compliance · Policy data · AI-assisted", title: { zh: "稳定币政策追踪", en: "Stablecoin Policy Tracker" }, arrow: "Live site →", bullets: [
-      { zh: "独立设计、开发并持续维护的全球政策追踪站", en: "A global policy tracker I designed, built, and maintain solo" },
-      { zh: "按国家/地区梳理监管框架：发行 · 储备 · 合规 · 跨境", en: "Maps regulation jurisdiction by jurisdiction: issuance, reserves, compliance, cross-border" },
-      { zh: "自建 AI 流水线：读一手文件、生成摘要与日报", en: "Self-built AI pipeline: reads primary sources, ships summaries & daily briefs" }
+    { href: "https://stablecoin-policy.vercel.app/", meta: "Compliance · Policy data · AI-assisted", title: { zh: "稳定币政策追踪", en: "Stablecoin Policy Tracker", fr: "Observatoire des politiques stablecoin" }, arrow: "Live site →", bullets: [
+      { zh: "独立设计、开发并持续维护的全球政策追踪站", en: "A global policy tracker I designed, built, and maintain solo", fr: "Un observatoire mondial des réglementations, conçu, développé et maintenu en solo" },
+      { zh: "按国家/地区梳理监管框架：发行 · 储备 · 合规 · 跨境", en: "Maps regulation jurisdiction by jurisdiction: issuance, reserves, compliance, cross-border", fr: "Cartographie la réglementation juridiction par juridiction : émission, réserves, conformité, transfrontalier" },
+      { zh: "自建 AI 流水线：读一手文件、生成摘要与日报", en: "Self-built AI pipeline: reads primary sources, ships summaries & daily briefs", fr: "Pipeline IA maison : lit les sources primaires, produit synthèses et briefs quotidiens" }
     ], star: null },
-    { href: "https://wonderline-lilac.vercel.app", meta: "Kids · Art · Web product", title: "Wonderline", arrow: "Preview →", wip: { zh: "开发中", en: "In progress" }, bullets: [
-      { zh: "从想法到上线，独立完成的儿童艺术探索 Web 产品", en: "A kids' art-exploration web product, taken from idea to shipped, solo" },
-      { zh: "上传孩子的画 → 生成个性化、可打印的创作活动页", en: "Upload a child's drawing → personalized, printable activity pages" },
-      { zh: "受真实艺术家风格启发", en: "Inspired by real artists' styles" }
+    { href: "https://wonderline-lilac.vercel.app", meta: "Kids · Art · Web product", title: "Wonderline", arrow: "Preview →", wip: { zh: "开发中", en: "In progress", fr: "En cours" }, bullets: [
+      { zh: "从想法到上线，独立完成的儿童艺术探索 Web 产品", en: "A kids' art-exploration web product, taken from idea to shipped, solo", fr: "Un produit web d’exploration artistique pour enfants, de l’idée à la mise en ligne, en solo" },
+      { zh: "上传孩子的画 → 生成个性化、可打印的创作活动页", en: "Upload a child's drawing → personalized, printable activity pages", fr: "On téléverse le dessin d’un enfant → des pages d’activités personnalisées et imprimables" },
+      { zh: "受真实艺术家风格启发", en: "Inspired by real artists' styles", fr: "Inspiré du style d’artistes réels" }
     ], star: null },
     { href: "https://dorahacks.io/buidl/45336", meta: "QVAC hackathon · On-device AI · P2P", title: "TaleTrip", arrow: "DoraHacks →", bullets: [
-      { zh: "把一趟家庭旅行变成个性化的双语 AI 绘本", en: "Turns a family trip into a personalized, bilingual AI picture book" },
-      { zh: "文字 · 插画 · 配音 · 播放，100% 在设备本地完成", en: "Written, illustrated, narrated, played 100% on-device" },
-      { zh: "P2P 把重活从平板卸载到笔记本；不上云、不需账号", en: "Heavy authoring offloaded tablet → laptop over P2P; no cloud, no accounts" }
+      { zh: "把一趟家庭旅行变成个性化的双语 AI 绘本", en: "Turns a family trip into a personalized, bilingual AI picture book", fr: "Transforme un voyage en famille en album illustré bilingue, généré par IA" },
+      { zh: "文字 · 插画 · 配音 · 播放，100% 在设备本地完成", en: "Written, illustrated, narrated, played 100% on-device", fr: "Écrit, illustré, narré et lu 100 % sur l’appareil" },
+      { zh: "P2P 把重活从平板卸载到笔记本；不上云、不需账号", en: "Heavy authoring offloaded tablet → laptop over P2P; no cloud, no accounts", fr: "Les traitements lourds passent de la tablette au laptop en P2P ; sans cloud, sans compte" }
     ], star: null },
     { href: "https://github.com/web3yaso/citely-deal-desk", meta: "Encode Arc hackathon · x402 · ERC-8004 · ERC-8183", title: "Citely Deal Desk", arrow: "GitHub →", bullets: [
-      { zh: "把跨境合规判定变成钱包可离线验证的条件性证明（Settlement Authorization）", en: "Turns cross-border compliance verdicts into wallet-verifiable conditional proofs (Settlement Authorizations)" },
-      { zh: "注册为链上可发现的 ERC-8004 agent，API 通过 x402 按次计费、无需 API key", en: "A discoverable on-chain ERC-8004 agent; x402-metered API — no key, no account" },
-      { zh: "ERC-8183 托管：钱包先验证 SA 再放款，Citely 全程不碰资金；demo 已上线", en: "ERC-8183 escrow: the wallet verifies the SA before releasing a cent — Citely never touches funds; live demo" }
+      { zh: "把跨境合规判定变成钱包可离线验证的条件性证明（Settlement Authorization）", en: "Turns cross-border compliance verdicts into wallet-verifiable conditional proofs (Settlement Authorizations)", fr: "Transforme les décisions de conformité transfrontalière en preuves conditionnelles vérifiables par le wallet (Settlement Authorizations)" },
+      { zh: "注册为链上可发现的 ERC-8004 agent，API 通过 x402 按次计费、无需 API key", en: "A discoverable on-chain ERC-8004 agent; x402-metered API — no key, no account", fr: "Un agent ERC-8004 découvrable on-chain ; API facturée à l’appel via x402 — sans clé, sans compte" },
+      { zh: "ERC-8183 托管：钱包先验证 SA 再放款，Citely 全程不碰资金；demo 已上线", en: "ERC-8183 escrow: the wallet verifies the SA before releasing a cent — Citely never touches funds; live demo", fr: "Séquestre ERC-8183 : le wallet vérifie la SA avant de libérer le moindre centime — Citely ne touche jamais aux fonds ; démo en ligne" }
     ], links: [{ href: "citely-deal-desk-pitch.html", label: "Pitch deck →" }], star: null },
     { href: "https://github.com/web3yaso/escrowfi", meta: "Ignyte hackathon · Arc · Trade finance · USDC", title: "EscrowFi", arrow: "GitHub →", bullets: [
-      { zh: "SME 跨境贸易融资：进口商锁定 USDC 托管，出口商凭合规证明 T+0 拿到垫资", en: "SME trade finance on Arc: the importer locks USDC in escrow, the exporter gets a T+0 advance on a compliance proof" },
-      { zh: "放款闸门是可本地重验的 SA 证明而非信任——无有效证明，一分钱不动", en: "The credit gate is a locally re-verified SA proof, not trust — no valid proof, no money" },
-      { zh: "每笔完成的交易沉淀为链上可重验的 Credit Passport（合规即抵押物）", en: "Every completed cycle becomes a line in an on-chain, re-verifiable Credit Passport — compliance as collateral" }
+      { zh: "SME 跨境贸易融资：进口商锁定 USDC 托管，出口商凭合规证明 T+0 拿到垫资", en: "SME trade finance on Arc: the importer locks USDC in escrow, the exporter gets a T+0 advance on a compliance proof", fr: "Financement du commerce pour PME sur Arc : l’importateur bloque des USDC en séquestre, l’exportateur obtient une avance T+0 sur preuve de conformité" },
+      { zh: "放款闸门是可本地重验的 SA 证明而非信任——无有效证明，一分钱不动", en: "The credit gate is a locally re-verified SA proof, not trust — no valid proof, no money", fr: "Le déclencheur du crédit est une preuve SA revérifiable localement, pas la confiance — sans preuve valide, pas un centime ne bouge" },
+      { zh: "每笔完成的交易沉淀为链上可重验的 Credit Passport（合规即抵押物）", en: "Every completed cycle becomes a line in an on-chain, re-verifiable Credit Passport — compliance as collateral", fr: "Chaque cycle bouclé alimente un Credit Passport on-chain revérifiable — la conformité comme collatéral" }
     ], star: null }
   ],
-  expTitle: { zh: "经历", en: "Where I've worked" },
+  expTitle: { zh: "经历", en: "Where I've worked", fr: "Mon parcours" },
   experience: [
-    { current: true, period: { zh: "2026.03 — 现在", en: "2026.03 — now" }, org: "Independent", role: { zh: "独立开发者", en: "Independent builder" }, body: { zh: "全职独立开发 agent 支付与合规方向的产品——Citely、稳定币政策追踪、TaleTrip、Wonderline（详见上方作品）。", en: "Building independently in agent payments & compliance — Citely, Stablecoin Policy Tracker, TaleTrip, Wonderline (see work above)." } },
-    { current: false, period: { zh: "2025.03 — 2026.03", en: "2025.03 — 2026.03" }, org: "Binance", role: { zh: "产品支持工程师", en: "Product Support Engineer" }, bullets: [
-      { zh: "负责 Web3 钱包与交易系统的生产支持：排查链上交易失败、到账异常、钱包操作与资金流问题", en: "Production support for Web3 wallet & trading systems: failed on-chain transactions, crediting anomalies, wallet-operation and fund-flow issues" },
-      { zh: "处理复杂交易 case——状态异常、对账差异、结算问题与用户资金流异常", en: "Resolved complex transaction cases — status anomalies, reconciliation gaps, settlement issues, and anomalous user fund flows" },
-      { zh: "把高频问题沉淀为内部 SOP 与知识库，用 AI 工具提升总结与文档效率", en: "Distilled recurring issues into internal SOPs and a knowledge base; used AI tools to speed up case summaries and docs" }
+    { current: true, period: { zh: "2026.03 — 现在", en: "2026.03 — now", fr: "03/2026 — aujourd’hui" }, org: "Independent", role: { zh: "独立开发者", en: "Independent builder", fr: "Développeuse indépendante" }, body: { zh: "全职独立开发 agent 支付与合规方向的产品——Citely、稳定币政策追踪、TaleTrip、Wonderline（详见上方作品）。", en: "Building independently in agent payments & compliance — Citely, Stablecoin Policy Tracker, TaleTrip, Wonderline (see work above).", fr: "Je développe en indépendante dans les paiements d’agents et la conformité — Citely, l’observatoire des politiques stablecoin, TaleTrip, Wonderline (voir les projets ci-dessus)." } },
+    { current: false, period: { zh: "2025.03 — 2026.03", en: "2025.03 — 2026.03", fr: "03/2025 — 03/2026" }, org: "Binance", role: { zh: "产品支持工程师", en: "Product Support Engineer", fr: "Ingénieure support produit" }, bullets: [
+      { zh: "负责 Web3 钱包与交易系统的生产支持：排查链上交易失败、到账异常、钱包操作与资金流问题", en: "Production support for Web3 wallet & trading systems: failed on-chain transactions, crediting anomalies, wallet-operation and fund-flow issues", fr: "Support de production des wallets Web3 et des systèmes de trading : transactions on-chain échouées, anomalies de crédit, incidents d’exploitation et de flux de fonds" },
+      { zh: "处理复杂交易 case——状态异常、对账差异、结算问题与用户资金流异常", en: "Resolved complex transaction cases — status anomalies, reconciliation gaps, settlement issues, and anomalous user fund flows", fr: "Résolution de cas de transaction complexes : statuts anormaux, écarts de rapprochement, problèmes de règlement et flux de fonds atypiques" },
+      { zh: "把高频问题沉淀为内部 SOP 与知识库，用 AI 工具提升总结与文档效率", en: "Distilled recurring issues into internal SOPs and a knowledge base; used AI tools to speed up case summaries and docs", fr: "Transformation des problèmes récurrents en procédures internes et en base de connaissances ; outils IA pour accélérer synthèses de cas et documentation" }
     ] },
-    { current: false, period: { zh: "2021.06 — 2025.02", en: "2021.06 — 2025.02" }, org: "BNB Chain", role: { zh: "开发者关系工程师", en: "Developer Relations Engineer" }, bullets: [
-      { zh: "通过技术文档、生态资助与社区运营，推动 BNB Smart Chain 开发者增长", en: "Grew the BNB Smart Chain developer base through docs, ecosystem grants, and community" },
-      { zh: "为 50+ dApp 提供 API 集成支持、测试网指导与协议反馈通道，完成项目入驻", en: "Onboarded 50+ dApps with API-integration support, testnet guidance, and a protocol-feedback channel" },
-      { zh: "代表 BNB Chain 参与线上线下行业活动，担任生态技术布道官", en: "Represented BNB Chain at events online and offline as a technical evangelist" }
+    { current: false, period: { zh: "2021.06 — 2025.02", en: "2021.06 — 2025.02", fr: "06/2021 — 02/2025" }, org: "BNB Chain", role: { zh: "开发者关系工程师", en: "Developer Relations Engineer", fr: "Ingénieure relations développeurs" }, bullets: [
+      { zh: "通过技术文档、生态资助与社区运营，推动 BNB Smart Chain 开发者增长", en: "Grew the BNB Smart Chain developer base through docs, ecosystem grants, and community", fr: "Croissance de la base de développeurs BNB Smart Chain via la documentation, les grants d’écosystème et la communauté" },
+      { zh: "为 50+ dApp 提供 API 集成支持、测试网指导与协议反馈通道，完成项目入驻", en: "Onboarded 50+ dApps with API-integration support, testnet guidance, and a protocol-feedback channel", fr: "Intégration de plus de 50 dApps : support d’intégration API, accompagnement testnet et canal de retours vers le protocole" },
+      { zh: "代表 BNB Chain 参与线上线下行业活动，担任生态技术布道官", en: "Represented BNB Chain at events online and offline as a technical evangelist", fr: "Représentation de BNB Chain lors d’événements en ligne et sur place, en tant qu’évangéliste technique" }
     ] },
-    { current: false, period: { zh: "2019 — 2020", en: "2019 — 2020" }, org: "NodeReal", role: { zh: "产品经理", en: "Product Manager" }, bullets: [
-      { zh: "主导区块链节点基础设施与 RPC API 服务的产品路线图，面向企业及开发者客户", en: "Owned the product roadmap for blockchain node infrastructure and RPC API services for enterprise and developer users" },
-      { zh: "统筹跨团队新链集成与 API 功能交付，上线周期缩短约 30%", en: "Coordinated cross-team new-chain integrations and API releases, cutting delivery time by ~30%" }
+    { current: false, period: { zh: "2019 — 2020", en: "2019 — 2020", fr: "2019 — 2020" }, org: "NodeReal", role: { zh: "产品经理", en: "Product Manager", fr: "Cheffe de produit" }, bullets: [
+      { zh: "主导区块链节点基础设施与 RPC API 服务的产品路线图，面向企业及开发者客户", en: "Owned the product roadmap for blockchain node infrastructure and RPC API services for enterprise and developer users", fr: "Pilotage de la roadmap produit de l’infrastructure de nœuds blockchain et des services d’API RPC, pour les entreprises et les développeurs" },
+      { zh: "统筹跨团队新链集成与 API 功能交付，上线周期缩短约 30%", en: "Coordinated cross-team new-chain integrations and API releases, cutting delivery time by ~30%", fr: "Coordination inter-équipes des intégrations de nouvelles chaînes et des livraisons d’API, avec un délai réduit d’environ 30 %" }
     ] },
-    { current: false, period: { zh: "2018 — 2019", en: "2018 — 2019" }, org: "IRISnet", role: { zh: "商务拓展 & 社区经理", en: "BD & Community Manager" }, bullets: [
-      { zh: "搭建并运营 Cosmos/IBC 生态项目的全球社区，成员规模增长至 3 万+", en: "Built and ran the global community for a Cosmos/IBC ecosystem project, growing it to 30k+ members" },
-      { zh: "与交易所、钱包及验证节点建立合作，主导亚太市场的商务拓展", en: "Forged partnerships with exchanges, wallets, and validators; led business development across APAC" }
+    { current: false, period: { zh: "2018 — 2019", en: "2018 — 2019", fr: "2018 — 2019" }, org: "IRISnet", role: { zh: "商务拓展 & 社区经理", en: "BD & Community Manager", fr: "Business development & community manager" }, bullets: [
+      { zh: "搭建并运营 Cosmos/IBC 生态项目的全球社区，成员规模增长至 3 万+", en: "Built and ran the global community for a Cosmos/IBC ecosystem project, growing it to 30k+ members", fr: "Création et animation de la communauté mondiale d’un projet de l’écosystème Cosmos/IBC, portée à plus de 30 000 membres" },
+      { zh: "与交易所、钱包及验证节点建立合作，主导亚太市场的商务拓展", en: "Forged partnerships with exchanges, wallets, and validators; led business development across APAC", fr: "Partenariats noués avec des exchanges, des wallets et des validateurs ; développement commercial sur la zone APAC" }
     ] }
   ],
-  stackTitle: { zh: "技术栈", en: "Tools I reach for" },
+  stackTitle: { zh: "技术栈", en: "Tools I reach for", fr: "Mes outils" },
   chipsHl: ["x402", "MCP servers", "Stablecoins"],
-  chipsNormal: ["Python", "TypeScript", "SQL", "Base / EVM", "BNB Chain", "Cosmos SDK", "Agent wallets", { zh: "AML / 合规", en: "AML / Compliance" }, "llms.txt / SKILL.md"],
-  eduTitle: { zh: "教育背景", en: "Education" },
+  chipsNormal: ["Python", "TypeScript", "SQL", "Base / EVM", "BNB Chain", "Cosmos SDK", "Agent wallets", { zh: "AML / 合规", en: "AML / Compliance", fr: "AML / Conformité" }, "llms.txt / SKILL.md"],
+  eduTitle: { zh: "教育背景", en: "Education", fr: "Formation" },
   education: [
     {
-      school: { zh: "EFREI · 工程师学院", en: "EFREI – École d'Ingénieurs" },
-      degree: { zh: "硕士 · 信息科学", en: "Master's · Information Science" },
-      meta: { zh: "2011.10 – 2013.11 · 法国巴黎", en: "Oct 2011 – Nov 2013 · Paris, France" }
+      school: { zh: "EFREI · 工程师学院", en: "EFREI – École d'Ingénieurs", fr: "EFREI — École d’ingénieurs" },
+      degree: { zh: "硕士 · 信息科学", en: "Master's · Information Science", fr: "Master · Sciences de l’information" },
+      meta: { zh: "2011.10 – 2013.11 · 法国巴黎", en: "Oct 2011 – Nov 2013 · Paris, France", fr: "Oct. 2011 – nov. 2013 · Paris, France" }
     },
     {
-      school: { zh: "东南大学", en: "Southeast University" },
-      degree: { zh: "学士 · 信息科学", en: "Bachelor's · Information Science" },
-      meta: { zh: "2008.08 – 2012.06 · 中国南京", en: "Aug 2008 – Jun 2012 · Nanjing, China" }
+      school: { zh: "东南大学", en: "Southeast University", fr: "Southeast University (Université du Sud-Est)" },
+      degree: { zh: "学士 · 信息科学", en: "Bachelor's · Information Science", fr: "Licence · Sciences de l’information" },
+      meta: { zh: "2008.08 – 2012.06 · 中国南京", en: "Aug 2008 – Jun 2012 · Nanjing, China", fr: "Août 2008 – juin 2012 · Nankin, Chine" }
     }
   ],
-  writingTitle: { zh: "写作", en: "Notes & writing" },
+  writingTitle: { zh: "写作", en: "Notes & writing", fr: "Notes & écrits" },
   writing: [
-    { date: "2026.05", tag: "x402", href: "#", title: { zh: "为什么 agent 支付需要按次结算", en: "Why agent payments need per-call settlement" }, blurb: { zh: "订阅制是为人类设计的；agent 更适合用稳定币为每一次调用付费。", en: "Subscriptions were built for humans; agents are better served paying per call in stablecoins." } },
-    { date: "2026.04", tag: "Compliance", href: "#", title: { zh: "把合规写给机器读", en: "Writing compliance for machines to read" }, blurb: { zh: "SKILL.md、llms.txt、OpenAPI——让 agent 直接消费合规知识。", en: "SKILL.md, llms.txt, OpenAPI — letting agents consume compliance knowledge directly." } },
-    { date: "2026.03", tag: "Notes", href: "#", title: { zh: "从交易所风控到 agent 钱包", en: "From exchange risk ops to agent wallets" }, blurb: { zh: "同一套对资金和风险的直觉，换了个交易对手。", en: "The same instincts for money and risk — just a new counterparty." } }
+    { date: "2026.05", tag: "x402", href: "#", title: { zh: "为什么 agent 支付需要按次结算", en: "Why agent payments need per-call settlement", fr: "Pourquoi les paiements d’agents exigent un règlement à l’appel" }, blurb: { zh: "订阅制是为人类设计的；agent 更适合用稳定币为每一次调用付费。", en: "Subscriptions were built for humans; agents are better served paying per call in stablecoins.", fr: "L’abonnement a été pensé pour les humains ; un agent gagne à payer chaque appel en stablecoin." } },
+    { date: "2026.04", tag: "Compliance", href: "#", title: { zh: "把合规写给机器读", en: "Writing compliance for machines to read", fr: "Écrire la conformité pour que les machines la lisent" }, blurb: { zh: "SKILL.md、llms.txt、OpenAPI——让 agent 直接消费合规知识。", en: "SKILL.md, llms.txt, OpenAPI — letting agents consume compliance knowledge directly.", fr: "SKILL.md, llms.txt, OpenAPI — pour que les agents consomment directement le savoir de conformité." } },
+    { date: "2026.03", tag: "Notes", href: "#", title: { zh: "从交易所风控到 agent 钱包", en: "From exchange risk ops to agent wallets", fr: "Du risk ops en exchange aux wallets d’agents" }, blurb: { zh: "同一套对资金和风险的直觉，换了个交易对手。", en: "The same instincts for money and risk — just a new counterparty.", fr: "Les mêmes réflexes sur l’argent et le risque — simplement une nouvelle contrepartie." } }
   ],
-  contactTitle: { zh: "聊聊", en: "Say hello" },
-  contactLede: { zh: "在招 agent 支付 / 稳定币基础设施 / Web3 合规方向的人，或者想聊聊这个交叉点——欢迎在下面任意渠道找我。", en: "Hiring for agent payments, stablecoin infra, or Web3 compliance — or just want to talk about this intersection? Reach me on any of these." },
+  contactTitle: { zh: "聊聊", en: "Say hello", fr: "Prenons contact" },
+  contactLede: { zh: "在招 agent 支付 / 稳定币基础设施 / Web3 合规方向的人，或者想聊聊这个交叉点——欢迎在下面任意渠道找我。", en: "Hiring for agent payments, stablecoin infra, or Web3 compliance — or just want to talk about this intersection? Reach me on any of these.", fr: "Vous recrutez sur les paiements d’agents, l’infra stablecoin ou la conformité Web3 — ou vous voulez simplement échanger sur cette intersection ? Écrivez-moi sur l’un de ces canaux." },
   emailHref: "mailto:hello@example.com",
-  emailLabel: { zh: "发邮件", en: "Email me" },
+  emailLabel: { zh: "发邮件", en: "Email me", fr: "M’écrire" },
   contactLinks: [
     { href: "https://x.com/builder_sophie", label: "X" },
     { href: "https://github.com/web3yaso", label: "GitHub" },
     { href: "https://www.linkedin.com/in/sophie-h-065373299/", label: "LinkedIn" }
   ],
-  antiphishLabel: { zh: "反钓鱼声明：", en: "Anti-phishing notice: " },
-  antiphishBody: { zh: "我只通过本页列出的渠道与你联系，不会主动私信推荐投资、索要私钥、助记词、验证码或任何形式的转账。收到以我名义发出的此类信息，请一律视为假冒。", en: "I will only contact you through the channels listed on this page. I will never DM you investment offers or ask for private keys, seed phrases, verification codes, or transfers of any kind. Treat any such message in my name as an impersonation." },
-  footerText: { zh: "© 2026 Sophie Huang", en: "© 2026 Sophie Huang" }
+  antiphishLabel: { zh: "反钓鱼声明：", en: "Anti-phishing notice: ", fr: "Avertissement anti-hameçonnage : " },
+  antiphishBody: { zh: "我只通过本页列出的渠道与你联系，不会主动私信推荐投资、索要私钥、助记词、验证码或任何形式的转账。收到以我名义发出的此类信息，请一律视为假冒。", en: "I will only contact you through the channels listed on this page. I will never DM you investment offers or ask for private keys, seed phrases, verification codes, or transfers of any kind. Treat any such message in my name as an impersonation.", fr: "Je ne vous contacterai jamais autrement que par les canaux listés sur cette page. Je ne vous enverrai jamais de message privé proposant un investissement et ne vous demanderai jamais de clés privées, de phrase de récupération, de code de vérification ni de transfert de fonds. Considérez tout message de ce type émis en mon nom comme une usurpation d’identité." },
+  footerText: { zh: "© 2026 Sophie Huang", en: "© 2026 Sophie Huang", fr: "© 2026 Sophie Huang" }
 };
 
 // ===================================================================
 // Rendering — no need to touch anything below to edit content.
 // ===================================================================
+// Add a language here (plus an `fr:`-style key on every content field) to offer it.
+const LANGS = [
+  { code: "en", label: "EN" },
+  { code: "zh", label: "中文" },
+  { code: "fr", label: "FR" }
+];
+
 let lang = (function () {
   // Defaults to English; respects an explicit ?lang= or a saved preference.
   let l = null;
   try {
     l = new URLSearchParams(location.search).get("lang") || localStorage.getItem("lang");
   } catch (e) {}
-  return (l === "zh" || l === "en") ? l : "en";
+  return LANGS.some((x) => x.code === l) ? l : "en";
 })();
 
 function t(v) {
@@ -661,11 +687,21 @@ function setText(id, value) {
 }
 
 function render() {
-  document.documentElement.lang = lang === "zh" ? "zh" : "en";
+  document.documentElement.lang = lang;
   const c = content, h = c.hero;
 
   setText("brand", c.brand);
-  setText("lang-toggle", lang === "zh" ? "EN" : "中文");
+
+  // Language switcher
+  const langSelect = document.getElementById("lang-select");
+  langSelect.innerHTML = "";
+  LANGS.forEach((l) => {
+    const opt = el("option", null, l.label);
+    opt.value = l.code;
+    opt.lang = l.code;
+    opt.selected = l.code === lang;
+    langSelect.appendChild(opt);
+  });
 
   // Nav links
   const navBox = document.getElementById("nav-items");
@@ -834,11 +870,14 @@ function render() {
   setText("footer", t(c.footerText));
 }
 
-document.getElementById("lang-toggle").addEventListener("click", () => {
-  lang = lang === "zh" ? "en" : "zh";
+function setLang(code) {
+  if (code === lang) return;
+  lang = code;
   try { localStorage.setItem("lang", lang); } catch (e) {}
   render();
-});
+}
+
+document.getElementById("lang-select").addEventListener("change", (e) => setLang(e.target.value));
 
 const stage = document.getElementById("stage");
 stage.addEventListener("mouseenter", () => stage.classList.add("is-hover"));
